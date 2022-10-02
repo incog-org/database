@@ -23,6 +23,10 @@ export default class Api {
         const params = new URLSearchParams(request.url.split('?')[1]);
         const category = params.get('category') || [];
         const name = params.get('search') || '';
+        const query = { name };
+        if (category) {
+            query.category = category;
+        }
         let offset = Number((params.get('offset') || '0'));
         let limit = Number((params.get('limit') || '0'));
         ;
@@ -32,7 +36,7 @@ export default class Api {
         if (0 > limit || isNaN(limit)) {
             limit = 0;
         }
-        this.db.findTheatre({ category, name }, offset, limit).then(results => {
+        this.db.findTheatre(query, offset, limit).then(results => {
             response.writeHead(200, RES_HEADERS);
             response.end(JSON.stringify(results));
         });
