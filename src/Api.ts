@@ -24,7 +24,7 @@ export default class Api {
         }
 
         const params = new URLSearchParams(request.url.split('?')[1]);
-        const category = params.get('category') || [];
+        const category = params.get('category') || '';
         const name = params.get('search') || '';
 
         const query = { name } as SearchQuery;
