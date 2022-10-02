@@ -21,7 +21,7 @@ export default class Api {
             return false;
         }
         const params = new URLSearchParams(request.url.split('?')[1]);
-        const category = params.get('category') || [];
+        const category = params.get('category') || '';
         const name = params.get('search') || '';
         const query = { name };
         if (category) {
