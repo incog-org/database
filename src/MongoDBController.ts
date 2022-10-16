@@ -6,7 +6,7 @@ const THEATRE_COLLECTION = 'theatre';
 const DOMAIN_COLLECTION = 'domains';
 
 export default class MongoDBController {
-    constructor(public db: Db) {}
+    constructor(public db: Db, public disconnect: () => void) {}
 
     async findTheatre(query: SearchQuery, offset = 0, limit = 0) : Promise<DBQuery[]> {
         const collection = this.db.collection(THEATRE_COLLECTION);
@@ -14,11 +14,42 @@ export default class MongoDBController {
         return (await collection.find({ ...query, name: { $regex: (query.name || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' }}).sort({ name: 1 }).collation({ locale: "en", caseLevel: true }).skip(offset).limit(limit).toArray()) as WithId<DBQuery>[]
     }
 
+    async deleteTheatre(id: string) {
+        const [ doc ] = await this.findTheatre({ id });
 
-    async insertTheatre(query: SearchQuery) : Promise<boolean> {
+        if (!doc) {
+            throw new RangeError('Document not found');
+        }
+
+        await this.db.collection(THEATRE_COLLECTION).deleteOne({ id });
+
+        return doc;
+    }
+
+    async updateTheatre(id: string, query: SearchQuery) : Promise<{
+        original: DBQuery;
+        updated: DBQuery;
+    }> {
+        const [ doc ] = await this.findTheatre({ id });
+
+        if (!doc) {
+            throw new RangeError('Document not found');
+        }
+
+        query.id = id;
+
+        if (query.category && !Array.isArray(query.category)) {
+            query.category = [ query.category ];
+        }
+
+        await this.db.collection(THEATRE_COLLECTION).updateOne(doc, { $set: query });
+
+        return { original: doc, updated: { ...doc, ...query } as DBQuery };
+    }
+    async insertTheatre(query: SearchQuery) : Promise<string> {
 
         if (!query.src || !query.name) {
-            return false;
+            throw new RangeError('Missing properties');
         }
 
         if (!query.category) {
@@ -36,9 +67,9 @@ export default class MongoDBController {
 
         query.id = await this.createTheatreId();
 
-        this.db.collection(THEATRE_COLLECTION).insertOne(query);
+        await this.db.collection(THEATRE_COLLECTION).insertOne(query);
 
-        return true;
+        return query.id;
     }
 
     async createTheatreId() : Promise<string> {
@@ -73,5 +104,9 @@ export default class MongoDBController {
         const entry = await collection.deleteOne({ host, owner: owner || null })
 
         return !!entry;
+    }
+
+    close() {
+
     }
 }

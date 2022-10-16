@@ -8,7 +8,18 @@ export default class Database {
         return this.controller.findTheatre(query, offset, limit);
     }
 
-    insertTheatre(query: SearchQuery) : Promise<boolean> { 
+    deleteTheatre(id: string) : Promise<DBQuery> {
+        return this.controller.deleteTheatre(id);
+    }
+
+    updateTheatre(id: string, query: SearchQuery) : Promise<{
+        original: DBQuery;
+        updated: DBQuery;
+    }> {
+        return this.controller.updateTheatre(id, query);
+    }
+
+    insertTheatre(query: SearchQuery) : Promise<string> { 
         return this.controller.insertTheatre(query);
     }
 
@@ -26,5 +37,9 @@ export default class Database {
 
     deleteHost(host: string, owner?: string) : Promise<boolean> {
         return this.controller.deleteHost(host, owner);
+    }
+
+    disconnect() {
+        return this.controller.disconnect();
     }
 }

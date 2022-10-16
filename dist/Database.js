@@ -6,6 +6,12 @@ export default class Database {
     findTheatre(query, offset = 0, limit = 0) {
         return this.controller.findTheatre(query, offset, limit);
     }
+    deleteTheatre(id) {
+        return this.controller.deleteTheatre(id);
+    }
+    updateTheatre(id, query) {
+        return this.controller.updateTheatre(id, query);
+    }
     insertTheatre(query) {
         return this.controller.insertTheatre(query);
     }
@@ -20,5 +26,8 @@ export default class Database {
     }
     deleteHost(host, owner) {
         return this.controller.deleteHost(host, owner);
+    }
+    disconnect() {
+        return this.controller.disconnect();
     }
 }

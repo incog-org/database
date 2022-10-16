@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from "http";
 import { SearchQuery } from './Interface.js'
-import Database from "./App";
+import Database from "./Index";
 
 const RES_HEADERS = {
     'access-control-allow-headers': '*',
@@ -23,7 +23,10 @@ export default class Api {
             return false;
         }
 
-        const params = new URLSearchParams(request.url.split('?')[1]);
+
+        const [ path, rawParams ] = request.url.split('?');
+
+        const params = new URLSearchParams(rawParams);
         const category = params.get('category') || '';
         const name = params.get('search') || '';
 

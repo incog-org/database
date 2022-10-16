@@ -20,7 +20,8 @@ export default class Api {
         if (!request.url?.startsWith(this.directory)) {
             return false;
         }
-        const params = new URLSearchParams(request.url.split('?')[1]);
+        const [path, rawParams] = request.url.split('?');
+        const params = new URLSearchParams(rawParams);
         const category = params.get('category') || '';
         const name = params.get('search') || '';
         const query = { name };

@@ -4,9 +4,15 @@ export default class Database {
     controller: MongoDBController;
     constructor(controller: MongoDBController);
     findTheatre(query: SearchQuery, offset?: number, limit?: number): Promise<DBQuery[]>;
-    insertTheatre(query: SearchQuery): Promise<boolean>;
+    deleteTheatre(id: string): Promise<DBQuery>;
+    updateTheatre(id: string, query: SearchQuery): Promise<{
+        original: DBQuery;
+        updated: DBQuery;
+    }>;
+    insertTheatre(query: SearchQuery): Promise<string>;
     createTheatreId(): Promise<string>;
     findHost(host: string, owner?: string): Promise<boolean>;
     insertHost(host: string, owner?: string): Promise<boolean>;
     deleteHost(host: string, owner?: string): Promise<boolean>;
+    disconnect(): void;
 }

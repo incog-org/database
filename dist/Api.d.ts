@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { IncomingMessage, ServerResponse } from "http";
-import Database from "./App";
+import Database from "./Index";
 export default class Api {
     db: Database;
     directory: string;
